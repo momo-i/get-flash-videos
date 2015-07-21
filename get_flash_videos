@@ -195,6 +195,8 @@ if ( ((@urls == 1) and $urls[0] !~ m'\.') or
   $search = join ' ', @urls;
 }
 
+$search = Encode::decode('utf-8', $search);
+
 my @download_urls;
 
 if ($search) {
@@ -216,7 +218,7 @@ if ($search) {
 
       my $count = 1;
       for my $result(@results) {
-        printf "[%2d] %s\n", $count, $result->{name};
+        printf "[%2d] %s\n", $count, Encode::encode('utf-8', $result->{name});
 
         if ($result->{description}) {
           # Show as much of the description as will fit on at least 2

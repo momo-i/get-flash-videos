@@ -6,7 +6,7 @@ use Carp;
 use FlashVideo::Utils;
 
 # Sites which support searching
-my @sites_with_search = ('4oD', 'GoogleVideoSearch');
+my @sites_with_search = ('GoogleVideoSearch');
 
 sub search {
   my ($class, $search, $max_per_site, $max_results) = @_;
