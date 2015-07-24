@@ -3,32 +3,31 @@ package FlashVideo::Site::Xhamster;
 
 use strict;
 use FlashVideo::Utils;
+use File::Basename;
 
 sub find_video {
   my ($self, $browser) = @_;
 
-  my $server;
-  if ($browser->content =~ m{'srv': '(http://[^'"]+)'}) {
-    $server = $1;
-  }
-  else {
-    die "Couldn't determine xhamster server";
-  }
-
-  my $video_file;
-  if ($browser->content =~ m{'file': '([^'"]+\.flv)'}) {
-    $video_file = $1;
-  }
-  else {
-    die "Couldn't determine xhamster video filename";
+  my ($id, $title);
+  if ($browser->content =~ m{http://\S+/movies/([0-9]+)/(\S+)\.html}) {
+    $id = $1;
+    $title = $2;
+    debug "ID: $id, Title: $title";
   }
 
-  my $filename = title_to_filename(extract_title($browser));
- 
-  my $url = sprintf "%s/flv2/%s", $server, $video_file;
+  my ($url, $ext, $regex);
+  if ($browser->content =~ m{<video .* file="([^'"]+)"}) {
+    $url = $1;
+    $regex = qr/\.[^\.]+$/;
+    $ext = ( fileparse( $url, $regex ) )[2];
+    debug "URL: $url, Ext: $ext";
+  }
 
-  # I want to follow redirects now
-  $browser->allow_redirects;
+  my $filename = title_to_filename(extract_title($browser), $ext);
+  debug "Filename: $filename";
+
+  $browser->get($url);
+  $url = $browser->response->header('Location');
 
   return $url, $filename;
 }
