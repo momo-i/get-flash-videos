@@ -24,6 +24,7 @@ sub find_video {
   }
 
   my $filename = title_to_filename(extract_title($browser), $ext);
+  $filename =~ s/_-_xHamster_com//;
   debug "Filename: $filename";
 
   $browser->get($url);
