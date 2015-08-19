@@ -5,6 +5,9 @@ use strict;
 use FlashVideo::Utils;
 use File::Basename;
 
+our $VERSION = '0.02';
+sub Version { $VERSION; }
+
 sub find_video {
   my ($self, $browser) = @_;
 
@@ -16,11 +19,13 @@ sub find_video {
   }
 
   my ($url, $ext, $regex);
-  if ($browser->content =~ m{<video .* file="([^'"]+)"}) {
+  if ($browser->content =~ m{file: '([^'"]+)'} || $browser->content =~ m{<video .* file="([^'"]+)"}) {
     $url = $1;
     $regex = qr/\.[^\.]+$/;
     $ext = ( fileparse( $url, $regex ) )[2];
     debug "URL: $url, Ext: $ext";
+  } else {
+    return;
   }
 
   my $filename = title_to_filename(extract_title($browser), $ext);
